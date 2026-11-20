@@ -48,7 +48,7 @@ export const CartView: React.FC<CartViewProps> = ({ locale }) => {
   const amountToFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
 
   // Standard shipping fee inside Dhaka (80 BDT), free if subtotal >= 2000
-  const estimatedShipping = subtotal >= freeShippingThreshold || subtotal === 0 ? 0 : 80;
+  const estimatedShipping = subtotal === 0 ? 0 : 80;
 
   const discountValue = appliedCoupon ? appliedCoupon.discountAmount : 0;
   const finalTotal = Math.max(0, subtotal - discountValue + estimatedShipping);

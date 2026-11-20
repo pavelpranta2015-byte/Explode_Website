@@ -80,7 +80,7 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({ locale }) => {
   } | null>(null);
 
   // Delivery Charge logic
-  const isFreeDelivery = subtotal >= 2000;
+  const isFreeDelivery = false;
   const shippingFee = isFreeDelivery
     ? 0
     : deliveryZone === "inside"
