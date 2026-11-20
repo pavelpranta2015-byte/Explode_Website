@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@theme {
+  --color-olive-50: #f4f6ee;
+  --color-olive-100: #e7ebd9;
+  --color-olive-200: #d0d9b6;
+  --color-olive-300: #b1c18b;
+  --color-olive-400: #93a866;
+  --color-olive-500: #68734B;
+  --color-olive-600: #596440;
+  --color-olive-700: #465137;
+  --color-olive-800: #39422f;
+  --color-olive-900: #31382a;
+  --color-olive-950: #1a1e16;
+
+  --color-brand-olive: #68734B;
+  --color-brand-deep-olive: #465137;
+  --color-brand-beige: #D7C5A5;
+  --color-brand-cream: #F5F0E6;
+  --color-brand-cream-light: #FAF7F2;
+  --color-brand-charcoal: #292B26;
+  --color-brand-muted: #77786F;
+  --color-brand-white: #FFFFFF;
+
+  --font-serif: var(--font-playfair), "Playfair Display", Georgia, serif;
+  --font-sans: var(--font-manrope), var(--font-bengali), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-bengali: var(--font-bengali), "Hind Siliguri", sans-serif;
+}
+
+:root {
+  --brand-olive: #68734B;
+  --brand-deep-olive: #465137;
+  --brand-beige: #D7C5A5;
+  --brand-cream: #F5F0E6;
+  --brand-charcoal: #292B26;
+  --brand-muted: #77786F;
+}
+
+body {
+  background-color: #FAF7F2;
+  color: #292B26;
+  font-family: var(--font-manrope), var(--font-bengali), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbars and transitions */
+::selection {
+  background-color: #D7C5A5;
+  color: #292B26;
+}
+
+.font-serif-heading {
+  font-family: var(--font-playfair), "Playfair Display", Georgia, serif;
+}
+
+.font-bengali-text {
+  font-family: var(--font-bengali), "Hind Siliguri", sans-serif;
+}
