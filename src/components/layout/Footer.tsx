@@ -54,7 +54,7 @@ export const Footer: React.FC<FooterProps> = ({ locale }) => {
                 <FacebookIcon className="w-4 h-4" />
               </a>
               <a
-                href="https://wa.me/8801700000000"
+                href="https://wa.me/8801999101157"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="WhatsApp Contact"
@@ -200,10 +200,10 @@ export const Footer: React.FC<FooterProps> = ({ locale }) => {
               <li className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-[#D7C5A5] shrink-0" />
                 <a
-                  href="tel:+8801700000000"
+                  href="tel:+8801999101157"
                   className="hover:text-[#D7C5A5] transition-colors"
                 >
-                  +880 1700-000000
+                  +880 1999-101157
                 </a>
               </li>
               <li className="flex items-center gap-2.5">

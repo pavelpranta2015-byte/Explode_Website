@@ -71,7 +71,7 @@ export default async function ContactPage({ params }: ContactPageProps) {
 
               {/* WhatsApp Button */}
               <a
-                href="https://wa.me/8801700000000"
+                href="https://wa.me/8801999101157"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-4 p-4 rounded-2xl bg-[#25D366]/10 border border-[#25D366]/30 hover:bg-[#25D366]/20 transition-colors group"
@@ -84,7 +84,7 @@ export default async function ContactPage({ params }: ContactPageProps) {
                     WhatsApp Support
                   </h4>
                   <p className="text-xs text-[#77786F]">
-                    +880 1700-000000 (Instant replies)
+                    +880 1999-101157 (Instant replies)
                   </p>
                 </div>
               </a>
@@ -127,7 +127,7 @@ export default async function ContactPage({ params }: ContactPageProps) {
                     <span className="font-bold block text-[#292B26]">
                       {locale === "bn" ? "হটলাইন:" : "Phone Support:"}
                     </span>
-                    <p className="text-[#77786F]">+880 1700-000000</p>
+                    <p className="text-[#77786F]">+880 1999-101157</p>
                   </div>
                 </div>
 

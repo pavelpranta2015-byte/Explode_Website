@@ -104,7 +104,7 @@ export const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
       selectedVariant.name.en || selectedVariant.size || "Standard"
     }) priced at ৳${currentPrice}. Please provide order details.`
   );
-  const whatsappUrl = `https://wa.me/8801700000000?text=${whatsappText}`;
+  const whatsappUrl = `https://wa.me/8801999101157?text=${whatsappText}`;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">

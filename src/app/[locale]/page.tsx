@@ -66,7 +66,7 @@ export default async function HomePage({ params }: HomePageProps) {
         ],
         contactPoint: {
           "@type": "ContactPoint",
-          telephone: "+8801700000000",
+          telephone: "+8801999101157",
           contactType: "customer service",
           areaServed: "BD",
           availableLanguage: ["English", "Bengali"],

@@ -21,13 +21,13 @@ export const AnnouncementBar: React.FC<AnnouncementBarProps> = ({ locale }) => {
         </p>
         <div className="flex items-center gap-4 text-xs">
           <a
-            href="https://wa.me/8801700000000?text=Hello%20EXPLODE%20BD%2C%20I%20would%20like%20to%20order%20modest%20fashion%20products."
+            href="https://wa.me/8801999101157?text=Hello%20EXPLODE%20BD%2C%20I%20would%20like%20to%20order%20modest%20fashion%20products."
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 hover:text-[#D7C5A5] transition-colors"
           >
             <MessageCircle className="w-3.5 h-3.5 text-[#D7C5A5]" />
-            <span>WhatsApp: +880 1700-000000</span>
+            <span>WhatsApp: +880 1999-101157</span>
           </a>
           <span className="hidden md:inline text-white/30">|</span>
           <Link

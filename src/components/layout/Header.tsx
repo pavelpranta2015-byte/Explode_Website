@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
@@ -18,8 +18,7 @@ import {
   Menu,
   X,
   ChevronDown,
-  Sparkles,
-} from "lucide-react";
+  } from "lucide-react";
 
 interface HeaderProps {
   locale: Locale;
@@ -204,7 +203,6 @@ export const Header: React.FC<HeaderProps> = ({ locale }) => {
                 href={`/${locale}/new-arrivals`}
                 className="hover:text-[#68734B] transition-colors py-2 flex items-center gap-1"
               >
-                <Sparkles className="w-3.5 h-3.5 text-[#68734B]" />
                 <span>{t.nav.newArrivals}</span>
               </Link>
 

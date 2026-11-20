@@ -203,7 +203,7 @@ function AccountContent() {
                   <p className="font-bold text-[#292B26] pt-1">
                     House #12, Road #4, Dhanmondi, Dhaka - 1205
                   </p>
-                  <p className="text-[#77786F]">Contact: +880 1700-000000</p>
+                  <p className="text-[#77786F]">Contact: +880 1999-101157</p>
                 </div>
               </div>
             )}

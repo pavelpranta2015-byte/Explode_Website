@@ -90,11 +90,11 @@ export default async function ReturnExchangePolicyPage({ params }: PolicyPagePro
                 {locale === "bn" ? "এক্সচেঞ্জ করতে সহায়তা প্রয়োজন?" : "Need Help with an Exchange?"}
               </span>
               <p className="text-xs text-[#77786F]">
-                WhatsApp: +880 1700-000000 | Email: support@explodebd.com
+                WhatsApp: +880 1999-101157 | Email: support@explodebd.com
               </p>
             </div>
             <a
-              href="https://wa.me/8801700000000?text=I%20would%20like%20to%20request%20an%20exchange%20for%20my%20order."
+              href="https://wa.me/8801999101157?text=I%20would%20like%20to%20request%20an%20exchange%20for%20my%20order."
               target="_blank"
               rel="noopener noreferrer"
               className="px-6 py-2.5 rounded-full bg-[#68734B] hover:bg-[#465137] text-white text-xs font-semibold shrink-0 shadow-xs flex items-center gap-2"

@@ -81,7 +81,7 @@ export default async function FAQPage({ params }: FAQPageProps) {
         bn: "সাইজ না মিললে বা কোনো ত্রুটি থাকলে কি পরিবর্তন করা যাবে?",
       },
       a: {
-        en: "We offer a 7-day hassle-free exchange policy. Just contact us via WhatsApp (+880 1700-000000) or Facebook Messenger with your order number.",
+        en: "We offer a 7-day hassle-free exchange policy. Just contact us via WhatsApp (+880 1999-101157) or Facebook Messenger with your order number.",
         bn: "অবশ্যই! পার্সেল পাওয়ার ৭ দিনের মধ্যে সাইজ বা ত্রুটির জন্য সহজ এক্সচেঞ্জ সুবিধা রয়েছে। আমাদের হোয়াটসঅ্যাপ বা ফেসবুক ইনবক্সে জানালেই আমরা এক্সচেঞ্জ প্রসেস করে দেব।",
       },
     },

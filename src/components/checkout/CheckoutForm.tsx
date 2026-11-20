@@ -561,7 +561,7 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({ locale }) => {
               <div className="bg-[#FAF7F2] p-4 rounded-2xl border border-[#D7C5A5]/60 space-y-3 animate-in fade-in duration-200">
                 <div className="text-xs text-[#465137] space-y-1">
                   <p className="font-bold">
-                    Official {paymentMethod.toUpperCase()} Account: +880 1700-000000 (Personal)
+                    Official {paymentMethod.toUpperCase()} Account: +880 1999-101157 (Personal)
                   </p>
                   <p className="text-[#77786F]">
                     {t.checkout.manualPaymentNotice}
@@ -691,7 +691,7 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({ locale }) => {
             </button>
 
             <div className="text-[11px] text-[#77786F] space-y-1 text-center">
-              <p>🔒 256-Bit Secure Modest Shopping Guarantee</p>
+              <p>256-Bit Secure Modest Shopping Guarantee</p>
               <p>{t.product.returnPolicy}</p>
             </div>
           </div>

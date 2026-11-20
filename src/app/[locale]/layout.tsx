@@ -4,6 +4,7 @@ import { Locale } from "@/types";
 import { isValidLocale, LOCALES } from "@/lib/i18n";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { WhatsAppFloat } from "@/components/common/WhatsAppFloat";
 
 export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }));
@@ -28,10 +29,11 @@ export default async function LocaleLayout({
   const locale = rawLocale as Locale;
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#FAF7F2]">
+    <div className="flex min-h-screen flex-col bg-[#FAF7F2] relative">
       <Header locale={locale} />
       <main className="flex-1">{children}</main>
       <Footer locale={locale} />
+      <WhatsAppFloat locale={locale} />
     </div>
   );
 }
