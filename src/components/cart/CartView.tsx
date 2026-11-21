@@ -40,12 +40,7 @@ export const CartView: React.FC<CartViewProps> = ({ locale }) => {
   const subtotal = getSubtotal();
 
   // Free shipping threshold: 2,000 BDT
-  const freeShippingThreshold = 2000;
-  const freeShippingProgress = Math.min(
-    100,
-    Math.round((subtotal / freeShippingThreshold) * 100)
-  );
-  const amountToFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
+  
 
   // Standard shipping fee inside Dhaka (80 BDT), free if subtotal >= 2000
   const estimatedShipping = subtotal === 0 ? 0 : 80;
@@ -130,29 +125,6 @@ export const CartView: React.FC<CartViewProps> = ({ locale }) => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left: Cart Items List */}
         <div className="lg:col-span-8 space-y-6">
-          {/* Free Shipping Progress Alert */}
-          <div className="bg-white rounded-2xl p-4 sm:p-5 border border-[#D7C5A5]/50 shadow-2xs space-y-2">
-            <div className="flex items-center justify-between text-xs sm:text-sm font-semibold text-[#465137]">
-              <span className="flex items-center gap-1.5">
-                <Truck className="w-4 h-4 text-[#68734B]" />
-                {amountToFreeShipping === 0
-                  ? locale === "bn"
-                    ? "অভিনন্দন! আপনার অর্ডারে ফ্রি ডেলিভারি সক্রিয় হয়েছে।"
-                    : "Congratulations! You have unlocked Free Delivery."
-                  : locale === "bn"
-                  ? `আর মাত্র ${formatPrice(amountToFreeShipping, locale)} টাকার পণ্য যোগ করলেই ফ্রি ডেলিভারি!`
-                  : `Add ${formatPrice(amountToFreeShipping, locale)} more to enjoy Free Nationwide Delivery!`}
-              </span>
-              <span className="font-bold">{freeShippingProgress}%</span>
-            </div>
-            <div className="w-full bg-[#FAF7F2] h-2 rounded-full overflow-hidden border border-[#D7C5A5]/30">
-              <div
-                className="bg-[#68734B] h-full transition-all duration-500 rounded-full"
-                style={{ width: `${freeShippingProgress}%` }}
-              />
-            </div>
-          </div>
-
           {/* Cart Table Header */}
           <div className="bg-white rounded-2xl border border-[#D7C5A5]/40 overflow-hidden shadow-xs">
             <div className="p-4 sm:p-6 border-b border-[#D7C5A5]/30 flex items-center justify-between">

@@ -85,16 +85,7 @@ export default async function FAQPage({ params }: FAQPageProps) {
         bn: "অবশ্যই! পার্সেল পাওয়ার ৭ দিনের মধ্যে সাইজ বা ত্রুটির জন্য সহজ এক্সচেঞ্জ সুবিধা রয়েছে। আমাদের হোয়াটসঅ্যাপ বা ফেসবুক ইনবক্সে জানালেই আমরা এক্সচেঞ্জ প্রসেস করে দেব।",
       },
     },
-    {
-      q: {
-        en: "How can I get Free Delivery?",
-        bn: "ফ্রি ডেলিভারি পেতে হলে কত টাকার অর্ডার করতে হবে?",
-      },
-      a: {
-        en: "Any order of ৳2,000 or above automatically qualifies for Free Delivery all across Bangladesh!",
-        bn: "যেকোনো হিজাব বা পোশাকে ২,০০০ টাকা বা তার বেশি অর্ডার করলেই সমগ্র বাংলাদেশে ডেলিভারি সম্পূর্ণ ফ্রি।",
-      },
-    },
+    
   ];
 
   return (
