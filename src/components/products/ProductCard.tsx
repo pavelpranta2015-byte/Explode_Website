@@ -79,11 +79,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, locale }) => 
 
         {/* Badges: Discount, New Arrival, Best Seller */}
         <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
-          {product.discountPercentage && (
-            <span className="bg-[#465137] text-white text-[11px] font-bold px-2 py-0.5 rounded-full shadow-xs">
-              -{product.discountPercentage}%
-            </span>
-          )}
+          
           {product.isNewArrival && (
             <span className="bg-[#68734B] text-white text-[11px] font-semibold px-2 py-0.5 rounded-full shadow-xs">
               {t.common.new}

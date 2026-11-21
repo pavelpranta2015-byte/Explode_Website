@@ -158,37 +158,7 @@ export default async function HomePage({ params }: HomePageProps) {
         </div>
       </section>
 
-      {/* Promotional Modest Announcement Banner */}
-      <section className="py-12 bg-gradient-to-r from-[#465137] via-[#596440] to-[#68734B] text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="space-y-2 text-center md:text-left">
-              <span className="bg-[#D7C5A5] text-[#292B26] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide inline-block">
-                {locale === "bn" ? "বিশেষ ডেলিভারি অফার" : "Special Modest Offer"}
-              </span>
-              <h3 className="font-serif-heading text-2xl sm:text-3xl font-bold">
-                {locale === "bn"
-                  ? "২,০০০ টাকার অধিক অর্ডারে সমগ্র বাংলাদেশে ফ্রি ডেলিভারি!"
-                  : "Free Nationwide Delivery on Orders Above ৳2,000"}
-              </h3>
-              <p className="text-xs sm:text-sm text-[#FAF7F2]/80 max-w-xl">
-                {locale === "bn"
-                  ? "আপনার পছন্দের হিজাব ও সালাত স্যুট বেছে নিন, ডেলিভারি চার্জ সম্পূর্ণ ফ্রি।"
-                  : "Order your favorite ready-to-wear hijabs, prayer sets, and accessories with zero delivery cost."}
-              </p>
-            </div>
-            <div className="shrink-0">
-              <Link
-                href={`/${locale}/offers`}
-                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-[#FAF7F2] hover:bg-white text-[#465137] font-semibold text-sm shadow-md transition-all group"
-              >
-                <span>{locale === "bn" ? "অফার দেখুন" : "Explore Offers"}</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+
 
       <WhyChooseUs locale={locale} />
 

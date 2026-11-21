@@ -121,11 +121,7 @@ export const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
             className="object-cover object-center"
           />
 
-          {product.discountPercentage && (
-            <span className="absolute top-4 left-4 bg-[#465137] text-white text-xs font-bold px-3 py-1 rounded-full shadow-xs">
-              -{product.discountPercentage}% OFF
-            </span>
-          )}
+          
 
           <button
             type="button"
@@ -196,11 +192,7 @@ export const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
               {formatPrice(currentOriginalPrice, locale)}
             </span>
           )}
-          {product.discountPercentage && (
-            <span className="text-xs font-semibold text-[#68734B] bg-[#68734B]/10 px-2.5 py-0.5 rounded-full">
-              {locale === "bn" ? "ছাড় সক্রিয়" : "Special Modest Offer"}
-            </span>
-          )}
+          
         </div>
 
         {/* Short Summary */}

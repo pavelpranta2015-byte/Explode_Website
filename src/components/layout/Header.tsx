@@ -206,12 +206,7 @@ export const Header: React.FC<HeaderProps> = ({ locale }) => {
                 <span>{t.nav.newArrivals}</span>
               </Link>
 
-              <Link
-                href={`/${locale}/offers`}
-                className="text-[#68734B] font-semibold hover:text-[#465137] transition-colors py-2"
-              >
-                {t.nav.offers}
-              </Link>
+              
             </nav>
 
             {/* Right Side: Search, Language Switcher, Wishlist, Cart */}
@@ -395,13 +390,7 @@ export const Header: React.FC<HeaderProps> = ({ locale }) => {
               >
                 {t.nav.newArrivals}
               </Link>
-              <Link
-                href={`/${locale}/offers`}
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-2 py-2 rounded-md hover:bg-[#FAF7F2] text-[#68734B] font-semibold"
-              >
-                {t.nav.offers}
-              </Link>
+              
               <Link
                 href={`/${locale}/account`}
                 onClick={() => setMobileMenuOpen(false)}
