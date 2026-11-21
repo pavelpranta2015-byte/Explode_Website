@@ -210,7 +210,7 @@ export const Header: React.FC<HeaderProps> = ({ locale }) => {
             </nav>
 
             {/* Right Side: Search, Language Switcher, Wishlist, Cart */}
-            <div className="flex items-center gap-1 sm:gap-3">
+            <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
               {/* Search Toggle / Input */}
               <div className="relative">
                 {searchOpen ? (
@@ -247,7 +247,7 @@ export const Header: React.FC<HeaderProps> = ({ locale }) => {
               </div>
 
               {/* Language Switcher */}
-              <LanguageSwitcher currentLocale={locale} className="hidden md:inline-flex" />
+              
 
               {/* Account Link */}
               <Link
@@ -276,12 +276,12 @@ export const Header: React.FC<HeaderProps> = ({ locale }) => {
               <Link
                 href={`/${locale}/cart`}
                 aria-label="Shopping Cart"
-                className="relative flex items-center gap-2 bg-[#68734B] hover:bg-[#465137] text-white px-3.5 py-2 rounded-full font-medium text-xs sm:text-sm shadow-xs transition-colors"
+                className="relative flex items-center justify-center gap-1.5 bg-[#68734B] hover:bg-[#465137] text-white p-2 sm:px-3.5 sm:py-2 rounded-full font-medium text-xs sm:text-sm shadow-xs transition-colors shrink-0"
               >
-                <ShoppingBag className="w-4 h-4" />
+                <ShoppingBag className="w-5 h-5 sm:w-4 sm:h-4" />
                 <span className="hidden md:inline">{t.nav.cart}</span>
                 {cartTotalItems > 0 && (
-                  <span className="bg-[#D7C5A5] text-[#292B26] px-1.5 py-0.2 rounded-full text-xs font-bold">
+                  <span className="absolute -top-1 -right-1 sm:static bg-[#D7C5A5] text-[#292B26] min-w-4 h-4 sm:min-w-auto sm:h-auto px-1 sm:px-1.5 py-0.2 rounded-full text-[10px] sm:text-xs font-bold flex items-center justify-center">
                     {cartTotalItems}
                   </span>
                 )}
