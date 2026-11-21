@@ -93,7 +93,7 @@ export default function RootLayout({
       lang="en"
       className={`${playfair.variable} ${manrope.variable} ${hindSiliguri.variable} scroll-smooth`}
     >
-      <body className="min-h-screen flex flex-col bg-[#FAF7F2] text-[#292B26] antialiased">
+      <body className="min-h-screen flex flex-col bg-[#FAF7F2] text-[#292B26] antialiased overflow-x-hidden w-full max-w-full">
         {children}
       </body>
     </html>

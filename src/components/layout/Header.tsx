@@ -97,7 +97,7 @@ export const Header: React.FC<HeaderProps> = ({ locale }) => {
                 href={`/${locale}`}
                 className="flex items-center gap-3 group focus:outline-hidden"
               >
-                <div className="relative w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-full overflow-hidden shadow-xs border border-[#68734B]/30 transition-transform duration-300 group-hover:scale-105 bg-[#292B26]">
+                <div className="relative w-10 h-10 sm:w-14 sm:h-14 shrink-0 rounded-full overflow-hidden shadow-xs border border-[#68734B]/30 transition-transform duration-300 group-hover:scale-105 bg-[#292B26]">
                   <Image
                     src="/images/explode-logo.png"
                     alt="EXPLODE BD Logo"
@@ -111,7 +111,7 @@ export const Header: React.FC<HeaderProps> = ({ locale }) => {
                   <span className="font-serif-heading font-bold text-lg sm:text-xl tracking-tight text-[#292B26] leading-none group-hover:text-[#68734B] transition-colors">
                     EXPLODE
                   </span>
-                  <span className="text-[10px] sm:text-xs text-[#77786F] tracking-wider uppercase font-medium">
+                  <span className="hidden xs:inline text-[10px] sm:text-xs text-[#77786F] tracking-wider uppercase font-medium">
                     {locale === "bn" ? "সৌন্দর্য বাড়ান শালীনতার সাথে" : "Modest Fashion BD"}
                   </span>
                 </div>
@@ -215,7 +215,7 @@ export const Header: React.FC<HeaderProps> = ({ locale }) => {
             </nav>
 
             {/* Right Side: Search, Language Switcher, Wishlist, Cart */}
-            <div className="flex items-center gap-2 sm:gap-4">
+            <div className="flex items-center gap-1 sm:gap-3">
               {/* Search Toggle / Input */}
               <div className="relative">
                 {searchOpen ? (
@@ -252,7 +252,7 @@ export const Header: React.FC<HeaderProps> = ({ locale }) => {
               </div>
 
               {/* Language Switcher */}
-              <LanguageSwitcher currentLocale={locale} className="hidden sm:inline-flex" />
+              <LanguageSwitcher currentLocale={locale} className="hidden md:inline-flex" />
 
               {/* Account Link */}
               <Link

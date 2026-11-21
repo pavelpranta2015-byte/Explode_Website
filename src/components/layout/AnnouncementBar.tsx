@@ -15,11 +15,11 @@ export const AnnouncementBar: React.FC<AnnouncementBarProps> = ({ locale }) => {
 
   return (
     <div className="bg-[#465137] text-[#FAF7F2] text-xs py-2 px-4 transition-colors">
-      <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-        <p className="font-medium text-center sm:text-left tracking-wide">
+      <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-1.5 sm:gap-2">
+        <p className="font-medium text-center sm:text-left tracking-wide text-[11px] sm:text-xs truncate max-w-full">
           {t.announcement.message}
         </p>
-        <div className="flex items-center gap-4 text-xs">
+        <div className="flex items-center justify-center gap-2 sm:gap-4 text-[11px] sm:text-xs flex-wrap">
           <a
             href="https://wa.me/8801999101157?text=Hello%20EXPLODE%20BD%2C%20I%20would%20like%20to%20order%20modest%20fashion%20products."
             target="_blank"
