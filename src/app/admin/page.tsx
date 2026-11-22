@@ -36,6 +36,7 @@ export default function AdminDashboardPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [orders, setOrders] = useState<any[]>([]);
+  const [showExitToast, setShowExitToast] = useState(false);
 
   // Function to hash string using SHA-256 for private browser storage
   const hashString = async (str: string) => {
@@ -103,7 +104,13 @@ export default function AdminDashboardPage() {
 
   const handleLogout = () => {
     setIsAuthenticated(false);
+    setPasscode(""); // Clear password input completely
+    setErrorMsg("");
     sessionStorage.removeItem("explode_admin_session");
+    setShowExitToast(true);
+    setTimeout(() => {
+      setShowExitToast(false);
+    }, 3500);
   };
 
   const handleChangePassword = async (e: React.FormEvent) => {
@@ -182,7 +189,17 @@ export default function AdminDashboardPage() {
   // 1. Login Gate Screen
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#FAF7F2] flex flex-col items-center justify-center p-4 relative">
+        {/* Goodbye Exit Toast Notification */}
+        {showExitToast && (
+          <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 bg-[#465137] text-white px-6 py-3 rounded-full shadow-xl flex items-center gap-2.5 animate-in slide-in-from-top-4 duration-300">
+            <Check className="w-4 h-4 text-emerald-400" />
+            <span className="text-xs font-semibold">
+              You have been locked out safely. Goodbye! 👋
+            </span>
+          </div>
+        )}
+
         <div className="w-full max-w-md bg-white rounded-3xl p-8 border border-[#D7C5A5]/60 shadow-xl text-center space-y-6">
           <div className="w-14 h-14 bg-[#465137]/10 text-[#465137] rounded-full flex items-center justify-center mx-auto">
             <Lock className="w-7 h-7" />
@@ -204,6 +221,8 @@ export default function AdminDashboardPage() {
                 placeholder="Enter Admin Passcode"
                 value={passcode}
                 onChange={(e) => setPasscode(e.target.value)}
+                autoComplete="new-password"
+                name="admin_secret_key"
                 autoFocus
                 className="w-full text-center tracking-widest text-lg font-mono py-3 px-4 bg-[#FAF7F2] border border-[#D7C5A5] rounded-2xl focus:outline-hidden focus:border-[#465137] text-[#292B26]"
               />
