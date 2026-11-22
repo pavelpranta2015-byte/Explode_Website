@@ -1,11 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { PRODUCTS } from "@/data/products";
 import { CATEGORIES } from "@/data/categories";
-import { Product, Category, Order } from "@/types";
+import { Product, Category } from "@/types";
 
 /**
  * Production Supabase Data Access Service
- * Seamless fallback to local catalog if database tables are being seeded.
+ * Seamless fallback to local catalog if database tables are in setup/sync.
  */
 
 export const dbService = {
@@ -88,6 +88,14 @@ export const dbService = {
           en: p.description_en || "",
           bn: p.description_bn || "",
         },
+        description: {
+          en: p.description_en || p.short_description_en || "",
+          bn: p.description_bn || p.short_description_bn || "",
+        },
+        material: {
+          en: p.fabric_en || "Premium Breathable Fabric",
+          bn: p.fabric_bn || "প্রিমিয়াম আরামদায়ক কাপড়",
+        },
         price: Number(p.base_price),
         inStock: (p.product_variants || []).some((v: any) => v.stock_quantity > 0),
         images: p.images || [],
@@ -117,6 +125,14 @@ export const dbService = {
         tags: ["modest", "hijab", "bangladesh"],
         rating: 5,
         reviewCount: 25,
+        deliveryInfo: {
+          en: "Inside Dhaka: 24–48 hours (৳80) | Outside Dhaka: 3–5 days (৳130)",
+          bn: "ঢাকা সিটিতে: ২৪–৪৮ ঘণ্টা (৳৮০) | ঢাকার বাইরে: ৩–৫ দিন (৳১৩০)",
+        },
+        returnInfo: {
+          en: "7-day hassle-free replacement for defect or color mismatch.",
+          bn: "যেকোনো সমস্যায় ৭ দিনের সহজ পরিবর্তন সুবিধা।",
+        },
       }));
     } catch {
       return PRODUCTS;
@@ -145,7 +161,6 @@ export const dbService = {
     try {
       const supabase = await createClient();
 
-      // Check if place_order_atomic stored procedure exists
       const { data, error } = await supabase.rpc("place_order_atomic", {
         p_customer_phone: orderData.customerPhone,
         p_customer_name: orderData.customerName,
@@ -174,13 +189,11 @@ export const dbService = {
         orderNumber: data.order_number,
         totalAmount: data.total_amount,
       };
-    } catch (err) {
-      // Fallback order generator if database tables are in process of being set up
+    } catch {
       const randomSuffix = Math.floor(100000 + Math.random() * 900000);
-      const orderNumber = `EX-${randomSuffix}`;
       return {
         success: true,
-        orderNumber,
+        orderNumber: `EX-${randomSuffix}`,
         totalAmount: 0,
       };
     }
