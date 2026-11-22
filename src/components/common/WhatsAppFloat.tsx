@@ -22,7 +22,7 @@ export const WhatsAppFloat: React.FC<WhatsAppFloatProps> = ({ locale }) => {
   )}`;
 
   return (
-    <aside aria-label="Customer Support" className="fixed bottom-6 right-6 z-50 flex items-center gap-3">
+    <aside aria-label="Customer Support" className="fixed bottom-20 md:bottom-6 right-5 md:right-6 z-40 flex items-center gap-3">
       {/* Tooltip bubble */}
       {showTooltip && (
         <div className="hidden sm:flex items-center gap-2 bg-white text-[#292B26] px-3.5 py-2 rounded-2xl shadow-lg border border-[#D7C5A5]/60 text-xs animate-fade-in">
