@@ -65,16 +65,15 @@ export const Header: React.FC<HeaderProps> = ({ locale }) => {
   ];
 
   return (
-    <>
+    <div className="sticky top-0 z-50 w-full" style={{ position: "-webkit-sticky" as any }}>
       <AnnouncementBar locale={locale} />
 
       <header
-        className={`sticky top-0 z-50 transition-all duration-300 w-full ${
+        className={`transition-all duration-300 w-full ${
           isScrolled
             ? "bg-white/95 backdrop-blur-md shadow-md py-2.5"
             : "bg-[#FAF7F2] border-b border-[#D7C5A5]/40 py-3"
         }`}
-        style={{ position: "-webkit-sticky" as any }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-4">
@@ -403,6 +402,6 @@ export const Header: React.FC<HeaderProps> = ({ locale }) => {
           </div>
         )}
       </header>
-    </>
+    </div>
   );
 };
