@@ -6,7 +6,6 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppFloat } from "@/components/common/WhatsAppFloat";
 import { CartGreetingModal } from "@/components/cart/CartGreetingModal";
-import { MobileBottomBar } from "@/components/layout/MobileBottomBar";
 
 export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }));
@@ -31,13 +30,12 @@ export default async function LocaleLayout({
   const locale = rawLocale as Locale;
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#FAF7F2] relative w-full overflow-x-hidden">
+    <div className="flex min-h-screen flex-col bg-[#FAF7F2] relative w-full">
       <Header locale={locale} />
-      <main className="flex-1 w-full pb-16 md:pb-0">{children}</main>
+      <main className="flex-1 w-full">{children}</main>
       <Footer locale={locale} />
       <WhatsAppFloat locale={locale} />
       <CartGreetingModal locale={locale} />
-      <MobileBottomBar locale={locale} />
     </div>
   );
 }
