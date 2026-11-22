@@ -13,6 +13,8 @@ function normalizePhone(phone: string): string {
   return cleaned;
 }
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -61,7 +63,6 @@ export async function POST(req: NextRequest) {
 
     if (existingCustomer) {
       customerId = existingCustomer.id;
-      // Update name/altPhone if changed
       await supabase
         .from("customers")
         .update({
@@ -92,7 +93,7 @@ export async function POST(req: NextRequest) {
       throw new Error("Could not register or find customer profile");
     }
 
-    // 2. Generate sequential unique order number starting from 0 (e.g. EX-0000, EX-0001...)
+    // 2. Generate sequential unique order number starting from 0 (EX-0000, EX-0001...)
     const { count: orderCount } = await supabase
       .from("orders")
       .select("*", { count: "exact", head: true });
@@ -113,7 +114,7 @@ export async function POST(req: NextRequest) {
       orderNumber = `EX-${String(seq).padStart(4, "0")}`;
     }
 
-    // 3. Insert order
+    // 3. Store full address and payment info in JSONB
     const addressPayload = {
       full_name: customerName.trim(),
       phone: cleanPhone,
@@ -122,6 +123,8 @@ export async function POST(req: NextRequest) {
       city_area: deliveryAddress?.cityArea || "",
       address: deliveryAddress?.fullAddress || "",
       delivery_instructions: deliveryNotes || "",
+      payment_trx_id: claimedTrxId || null,
+      payment_account: paymentNumber || null,
     };
 
     const { data: order, error: orderError } = await supabase
@@ -138,7 +141,6 @@ export async function POST(req: NextRequest) {
         shipping_fee: Number(shippingFee) || 0,
         discount_amount: Number(discountAmount) || 0,
         total_amount: Number(totalAmount) || 0,
-        admin_notes: claimedTrxId ? `TrxID: ${claimedTrxId} | Payer: ${paymentNumber || ""}` : null,
       })
       .select("id, order_number, total_amount, created_at")
       .single();
@@ -148,10 +150,10 @@ export async function POST(req: NextRequest) {
       throw new Error(orderError?.message || "Failed to create order record");
     }
 
-    // 4. Insert order items snapshot
+    // 4. Insert order items snapshot (variant_id must be valid UUID or null)
     const orderItemsPayload = items.map((i: any) => ({
       order_id: order.id,
-      variant_id: i.variantId || null,
+      variant_id: i.variantId && UUID_REGEX.test(i.variantId) ? i.variantId : null,
       snapshot_title: i.title || "Product",
       snapshot_color: i.color || null,
       snapshot_size: i.size || null,
@@ -171,14 +173,18 @@ export async function POST(req: NextRequest) {
 
     // 5. If manual digital payment, record payment entry
     if (paymentMethod !== "cod" && (claimedTrxId || paymentNumber)) {
-      await supabase.from("payments").insert({
-        order_id: order.id,
-        amount: Number(totalAmount) || 0,
-        payment_method: paymentMethod,
-        transaction_id: claimedTrxId || null,
-        payer_account: paymentNumber || null,
-        status: "submitted",
-      });
+      try {
+        await supabase.from("payments").insert({
+          order_id: order.id,
+          amount: Number(totalAmount) || 0,
+          payment_method: paymentMethod,
+          transaction_id: claimedTrxId || null,
+          payer_account: paymentNumber || null,
+          status: "submitted",
+        });
+      } catch (pErr) {
+        console.error("Payment insert error:", pErr);
+      }
     }
 
     return NextResponse.json({
@@ -213,7 +219,6 @@ export async function GET(req: NextRequest) {
         shipping_fee,
         discount_amount,
         total_amount,
-        admin_notes,
         created_at,
         customer:customers (
           id,
@@ -249,7 +254,7 @@ export async function GET(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   try {
     const body = await req.json();
-    const { orderId, status, paymentStatus, adminNotes } = body;
+    const { orderId, status, paymentStatus } = body;
 
     if (!orderId) {
       return NextResponse.json({ success: false, message: "orderId required" }, { status: 400 });
@@ -262,7 +267,6 @@ export async function PATCH(req: NextRequest) {
     };
     if (status) updates.status = status;
     if (paymentStatus) updates.payment_status = paymentStatus;
-    if (adminNotes !== undefined) updates.admin_notes = adminNotes;
 
     const { data, error } = await supabase
       .from("orders")

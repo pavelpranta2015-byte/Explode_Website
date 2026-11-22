@@ -535,9 +535,9 @@ export default function AdminDashboardPage() {
                             <span className="bg-[#FAF7F2] border border-[#D7C5A5]/60 px-2 py-0.5 rounded text-[10px] font-semibold text-[#465137] uppercase">
                               {order.payment_method}
                             </span>
-                            {order.admin_notes && (
+                            {order.delivery_address?.payment_trx_id && (
                               <p className="text-[10px] text-emerald-700 font-mono">
-                                {order.admin_notes}
+                                TrxID: {order.delivery_address.payment_trx_id}
                               </p>
                             )}
                           </div>
