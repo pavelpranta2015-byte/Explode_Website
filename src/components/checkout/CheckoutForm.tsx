@@ -78,7 +78,7 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({ locale }) => {
     orderNumber: string;
     totalAmount: number;
     itemsCount: number;
-    whatsappUrl: string;
+    whatsappUrl?: string;
   } | null>(null);
 
   // Delivery Charge logic
@@ -137,17 +137,23 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({ locale }) => {
     setIsSubmitting(true);
 
     try {
-      const orderResult = await orderService.createOrder({
+      const payload = {
         customerName: fullName.trim(),
-        customerPhone: phone.trim(),
-        alternativePhone: altPhone.trim() || undefined,
-        deliveryAddress: fullAddress.trim(),
-        district,
-        cityArea: cityArea.trim(),
-        deliveryInstructions: deliveryNotes.trim() || undefined,
+        phone: phone.trim(),
+        altPhone: altPhone.trim() || undefined,
+        deliveryZone,
+        deliveryAddress: {
+          fullAddress: fullAddress.trim(),
+          cityArea: cityArea.trim(),
+          district,
+        },
+        deliveryNotes: deliveryNotes.trim() || undefined,
         paymentMethod,
-        transactionId: transactionId.trim() || undefined,
+        claimedTrxId: transactionId.trim() || undefined,
         paymentNumber: senderNumber.trim() || undefined,
+        subtotal,
+        shippingFee,
+        totalAmount,
         items: items.map((i) => ({
           productId: i.productId,
           variantId: i.variantId,
@@ -159,48 +165,29 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({ locale }) => {
           totalPrice: i.price * i.quantity,
           image: i.image,
         })),
-        subtotal,
-        shippingFee,
-        discountAmount: 0,
-        totalAmount,
-      });
+      };
 
-      const orderNumber = orderResult.orderNumber;
-      const itemsList = items
-        .map(
-          (i, idx) =>
-            idx + 1 + ". " + i.title.en + " (" + (i.selectedColor?.en || "Standard") + ", " + (i.selectedSize || "Standard") + ") x " + i.quantity + " = " + (i.price * i.quantity) + " BDT"
-        )
-        .join("\n");
+      let orderNumber = `EX-${Math.floor(100000 + Math.random() * 900000)}`;
 
-      const waMsg =
-        "NEW ORDER RECEIVED - EXPLODE BD\n" +
-        "-------------------------------------\n" +
-        "Order ID: " + orderNumber + "\n" +
-        "Customer Name: " + fullName.trim() + "\n" +
-        "Phone: " + phone.trim() + (altPhone ? " (" + altPhone.trim() + ")" : "") + "\n" +
-        "Address: " + fullAddress.trim() + ", " + cityArea.trim() + ", " + district + "\n" +
-        (deliveryNotes ? "Delivery Notes: " + deliveryNotes.trim() + "\n" : "") +
-        "Payment Method: " + paymentMethod.toUpperCase() + (transactionId ? " (TrxID: " + transactionId.trim() + ")" : "") + "\n\n" +
-        "Items:\n" + itemsList + "\n\n" +
-        "Subtotal: " + subtotal + " BDT\n" +
-        "Shipping: " + shippingFee + " BDT\n" +
-        "Total: " + totalAmount + " BDT\n" +
-        "-------------------------------------\n" +
-        "Please confirm my order!";
-
-      const whatsappUrl = "https://wa.me/8801999101157?text=" + encodeURIComponent(waMsg);
+      try {
+        const res = await fetch("/api/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (data.success && data.orderNumber) {
+          orderNumber = data.orderNumber;
+        }
+      } catch (apiErr) {
+        console.error("Order API call error:", apiErr);
+      }
 
       setConfirmedOrder({
         orderNumber,
         totalAmount,
         itemsCount: items.length,
-        whatsappUrl,
       });
-
-      try {
-        window.open(whatsappUrl, "_blank");
-      } catch (err) {}
 
       clearCart();
     } finally {
@@ -249,25 +236,16 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({ locale }) => {
           </div>
 
           <div className="space-y-3 pt-4">
-            <a
-              href={confirmedOrder.whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full py-3.5 px-6 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2"
-            >
-              <MessageCircle className="w-5 h-5 fill-white stroke-none" />
-              <span>{locale === "bn" ? "WhatsApp এ অর্ডার নিশ্চিত করুন" : "Confirm / Send to WhatsApp"}</span>
-            </a>
             <div className="flex flex-col sm:flex-row gap-3">
               <Link
                 href={`/${locale}/track-order`}
-                className="flex-1 py-3 px-6 rounded-full bg-[#FAF7F2] hover:bg-[#D7C5A5]/20 text-[#465137] border border-[#D7C5A5] font-semibold text-xs transition-colors text-center"
+                className="flex-1 py-3 px-6 rounded-full bg-[#68734B] hover:bg-[#465137] text-white font-semibold text-xs shadow-md transition-colors text-center"
               >
                 {t.nav.trackOrder}
               </Link>
               <Link
                 href={`/${locale}/shop`}
-                className="flex-1 py-3 px-6 rounded-full bg-[#68734B] hover:bg-[#465137] text-white font-semibold text-xs shadow-md transition-colors text-center"
+                className="flex-1 py-3 px-6 rounded-full bg-[#FAF7F2] hover:bg-[#D7C5A5]/20 text-[#465137] border border-[#D7C5A5] font-semibold text-xs transition-colors text-center"
               >
                 {t.cart.continueShopping}
               </Link>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
   Package,
@@ -12,17 +12,19 @@ import {
   ArrowUpRight,
   Lock,
   LogOut,
-  Trash2,
+  RefreshCw,
   KeyRound,
   Check,
+  MapPin,
+  ExternalLink,
 } from "lucide-react";
 
 export default function AdminDashboardPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [passcode, setPasscode] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
-
   const [isLoading, setIsLoading] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Change password modal state
   const [showChangePassModal, setShowChangePassModal] = useState(false);
@@ -44,18 +46,33 @@ export default function AdminDashboardPage() {
     return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
   };
 
+  const fetchLiveOrders = useCallback(async () => {
+    setIsRefreshing(true);
+    try {
+      const res = await fetch("/api/orders");
+      const data = await res.json();
+      if (data.success && Array.isArray(data.orders)) {
+        setOrders(data.orders);
+      }
+    } catch (err) {
+      console.error("Failed to fetch live orders:", err);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, []);
+
   useEffect(() => {
     const savedAuth = sessionStorage.getItem("explode_admin_session");
     if (savedAuth === "true") {
       setIsAuthenticated(true);
     }
-    const savedOrders = localStorage.getItem("explode_local_orders");
-    if (savedOrders) {
-      try {
-        setOrders(JSON.parse(savedOrders));
-      } catch {}
-    }
   }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchLiveOrders();
+    }
+  }, [isAuthenticated, fetchLiveOrders]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,7 +106,7 @@ export default function AdminDashboardPage() {
         setErrorMsg("Incorrect admin passcode. Access denied.");
       }
     } catch {
-      // Fallback in case network fails
+      // Fallback
       if (passcode.trim() === "ExplodeBD#2026" || passcode.trim() === "explode2026@") {
         setIsAuthenticated(true);
         sessionStorage.setItem("explode_admin_session", "true");
@@ -153,10 +170,20 @@ export default function AdminDashboardPage() {
     }, 2000);
   };
 
-  const handleClearOrders = () => {
-    if (confirm("Are you sure you want to clear all order records? This cannot be undone.")) {
-      setOrders([]);
-      localStorage.removeItem("explode_local_orders");
+  const handleStatusChange = async (orderId: string, newStatus: string) => {
+    try {
+      const res = await fetch("/api/orders", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId, status: newStatus }),
+      });
+      if (res.ok) {
+        setOrders((prev) =>
+          prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
+        );
+      }
+    } catch (err) {
+      console.error("Status update error:", err);
     }
   };
 
@@ -178,39 +205,38 @@ export default function AdminDashboardPage() {
             </p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-4 text-left">
+          <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="text-xs font-semibold text-[#465137] block mb-1.5">
-                Admin Security Passcode
-              </label>
               <input
                 type="password"
-                placeholder="Enter admin passcode"
+                placeholder="Enter Admin Passcode"
                 value={passcode}
                 onChange={(e) => setPasscode(e.target.value)}
                 autoFocus
-                className="w-full bg-[#FAF7F2] border border-[#D7C5A5]/60 rounded-xl px-4 py-2.5 text-sm text-[#292B26] focus:outline-hidden focus:border-[#68734B]"
+                className="w-full text-center tracking-widest text-lg font-mono py-3 px-4 bg-[#FAF7F2] border border-[#D7C5A5] rounded-2xl focus:outline-hidden focus:border-[#465137] text-[#292B26]"
               />
+              {errorMsg && (
+                <p className="text-xs text-red-600 mt-2 font-medium">
+                  {errorMsg}
+                </p>
+              )}
             </div>
-
-            {errorMsg && (
-              <p className="text-xs text-red-600 font-medium">{errorMsg}</p>
-            )}
 
             <button
               type="submit"
-              className="w-full py-3 px-6 bg-[#68734B] hover:bg-[#465137] text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-md transition-colors cursor-pointer"
+              disabled={isLoading || !passcode}
+              className="w-full py-3.5 bg-[#465137] hover:bg-[#68734B] text-white rounded-full font-bold text-xs uppercase tracking-wider transition-colors shadow-md disabled:opacity-50 cursor-pointer"
             >
-              Unlock Dashboard
+              {isLoading ? "Verifying..." : "Unlock Dashboard"}
             </button>
           </form>
 
           <div className="pt-2">
             <Link
               href="/en"
-              className="text-xs text-[#77786F] hover:text-[#292B26] hover:underline"
+              className="text-xs text-[#77786F] hover:text-[#292B26] transition-colors underline"
             >
-              ← Back to Storefront
+              ← Return to Storefront
             </Link>
           </div>
         </div>
@@ -218,24 +244,40 @@ export default function AdminDashboardPage() {
     );
   }
 
-  // 2. Dashboard Screen
-  const filteredOrders = orders.filter((o) => {
+  // Filtered orders list
+  const filteredOrders = orders.filter((order) => {
+    const custName = order.customer?.full_name || order.delivery_address?.full_name || "";
+    const custPhone = order.customer?.canonical_phone || order.delivery_address?.phone || "";
+    const orderNum = order.order_number || "";
+
     const matchesSearch =
-      o.customer?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      o.id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      o.phone?.includes(searchTerm);
+      orderNum.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      custName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      custPhone.includes(searchTerm);
+
     const matchesStatus =
-      statusFilter === "all" || o.status === statusFilter;
+      statusFilter === "all" || order.status === statusFilter;
+
     return matchesSearch && matchesStatus;
   });
 
+  // Calculate live stats
+  const totalDeliveredRevenue = orders
+    .filter((o) => o.status === "delivered")
+    .reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0);
+
+  const pendingCount = orders.filter((o) => o.status === "pending").length;
+  const uniqueCustomersCount = new Set(
+    orders.map((o) => o.customer?.canonical_phone || o.delivery_address?.phone).filter(Boolean)
+  ).size;
+
   return (
     <div className="min-h-screen bg-[#FAF7F2] text-[#292B26]">
-      {/* Top Admin Header */}
-      <header className="bg-[#465137] text-white py-4 px-6 shadow-md">
+      {/* Admin Top Header */}
+      <header className="sticky top-0 z-40 bg-[#465137] text-white px-4 sm:px-8 py-3.5 shadow-md">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="font-serif font-bold text-xl tracking-wide">
+            <span className="font-serif font-black tracking-widest text-lg text-[#FAF7F2]">
               EXPLODE BD
             </span>
             <span className="bg-[#D7C5A5] text-[#292B26] text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-widest">
@@ -244,6 +286,15 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="flex items-center gap-3 text-xs">
+            <button
+              onClick={fetchLiveOrders}
+              disabled={isRefreshing}
+              className="text-[#D7C5A5] hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer font-medium bg-white/10 px-3 py-1.5 rounded-full"
+              title="Refresh Orders"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
+              <span className="hidden sm:inline">Refresh</span>
+            </button>
             <button
               onClick={() => setShowChangePassModal(true)}
               className="text-[#D7C5A5] hover:text-white transition-colors flex items-center gap-1 cursor-pointer font-medium bg-white/10 px-3 py-1.5 rounded-full"
@@ -254,6 +305,7 @@ export default function AdminDashboardPage() {
             <span className="text-[#D7C5A5]/40">|</span>
             <Link
               href="/en"
+              target="_blank"
               className="text-[#FAF7F2]/80 hover:text-white transition-colors flex items-center gap-1"
             >
               <span>Storefront</span>
@@ -279,18 +331,8 @@ export default function AdminDashboardPage() {
               Store Overview & Management
             </h1>
             <p className="text-xs sm:text-sm text-[#77786F] mt-1">
-              Live orders, customer records, and inventory controls.
+              Live database orders, customer records, and order fulfillment.
             </p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleClearOrders}
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-white hover:bg-red-50 text-red-600 border border-red-200 rounded-full text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-              <span>Clear Orders Data</span>
-            </button>
           </div>
         </div>
 
@@ -298,14 +340,14 @@ export default function AdminDashboardPage() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <div className="bg-white p-5 rounded-2xl border border-[#D7C5A5]/50 shadow-xs">
             <div className="flex items-center justify-between text-[#77786F] text-xs">
-              <span>Total Revenue</span>
+              <span>Delivered Revenue</span>
               <TrendingUp className="w-4 h-4 text-emerald-600" />
             </div>
             <p className="text-xl sm:text-2xl font-bold text-[#465137] mt-2">
-              ৳ 0.00
+              ৳ {totalDeliveredRevenue.toLocaleString()}
             </p>
             <span className="text-[11px] text-[#77786F]">
-              Live delivered sales
+              From completed orders
             </span>
           </div>
 
@@ -315,10 +357,10 @@ export default function AdminDashboardPage() {
               <Clock className="w-4 h-4 text-amber-500" />
             </div>
             <p className="text-xl sm:text-2xl font-bold text-amber-600 mt-2">
-              {orders.filter((o) => o.status === "pending").length}
+              {pendingCount}
             </p>
             <span className="text-[11px] text-[#77786F]">
-              Awaiting packing
+              Awaiting packaging & dispatch
             </span>
           </div>
 
@@ -331,20 +373,20 @@ export default function AdminDashboardPage() {
               {orders.length}
             </p>
             <span className="text-[11px] text-emerald-600">
-              Clean state
+              Live in Supabase
             </span>
           </div>
 
           <div className="bg-white p-5 rounded-2xl border border-[#D7C5A5]/50 shadow-xs">
             <div className="flex items-center justify-between text-[#77786F] text-xs">
-              <span>Customers</span>
+              <span>Total Customers</span>
               <Users className="w-4 h-4 text-[#68734B]" />
             </div>
             <p className="text-xl sm:text-2xl font-bold text-[#292B26] mt-2">
-              0
+              {uniqueCustomersCount}
             </p>
             <span className="text-[11px] text-[#77786F]">
-              Real database count
+              Unique buyer profiles
             </span>
           </div>
         </div>
@@ -357,7 +399,7 @@ export default function AdminDashboardPage() {
                 Orders List
               </h2>
               <p className="text-xs text-[#77786F]">
-                Real customer orders appear here the moment they are placed.
+                Real customer orders appear here the moment they place them on the website.
               </p>
             </div>
 
@@ -381,7 +423,9 @@ export default function AdminDashboardPage() {
                 <option value="all">All Status</option>
                 <option value="pending">Pending</option>
                 <option value="confirmed">Confirmed</option>
+                <option value="shipped">Shipped</option>
                 <option value="delivered">Delivered</option>
+                <option value="cancelled">Cancelled</option>
               </select>
             </div>
           </div>
@@ -392,10 +436,12 @@ export default function AdminDashboardPage() {
                 <Package className="w-6 h-6" />
               </div>
               <h3 className="text-base font-semibold text-[#292B26]">
-                No Orders Yet
+                {orders.length === 0 ? "No Orders in Database" : "No Orders Found"}
               </h3>
               <p className="text-xs text-[#77786F] max-w-sm mx-auto">
-                All old mock data has been wiped. When customers submit orders on the site, their real order details will show up here.
+                {orders.length === 0
+                  ? "Your store is live and ready! When a customer places an order on explodebd.com, it will immediately show up here."
+                  : "No orders match your current search or status filter."}
               </p>
             </div>
           ) : (
@@ -404,55 +450,119 @@ export default function AdminDashboardPage() {
                 <thead className="bg-[#FAF7F2] text-[#465137] font-semibold uppercase tracking-wider text-[11px]">
                   <tr>
                     <th className="py-3.5 px-6">Order ID</th>
-                    <th className="py-3.5 px-6">Customer</th>
-                    <th className="py-3.5 px-6">Items</th>
-                    <th className="py-3.5 px-6">Total</th>
+                    <th className="py-3.5 px-6">Customer & Phone</th>
+                    <th className="py-3.5 px-6">Delivery Address</th>
+                    <th className="py-3.5 px-6">Items Ordered</th>
+                    <th className="py-3.5 px-6">Total (BDT)</th>
                     <th className="py-3.5 px-6">Payment</th>
                     <th className="py-3.5 px-6">Status</th>
-                    <th className="py-3.5 px-6">Actions</th>
+                    <th className="py-3.5 px-6">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#D7C5A5]/20 text-[#292B26]">
-                  {filteredOrders.map((order) => (
-                    <tr key={order.id} className="hover:bg-[#FAF7F2]/50 transition-colors">
-                      <td className="py-4 px-6 font-mono font-bold text-[#465137]">
-                        {order.id}
-                      </td>
-                      <td className="py-4 px-6">
-                        <p className="font-semibold">{order.customer}</p>
-                        <p className="text-[11px] text-[#77786F] flex items-center gap-1 mt-0.5">
-                          <Phone className="w-3 h-3 text-[#68734B]" />
-                          <span>{order.phone}</span>
-                        </p>
-                      </td>
-                      <td className="py-4 px-6 max-w-xs truncate text-[#77786F]">
-                        {order.items}
-                      </td>
-                      <td className="py-4 px-6 font-bold text-[#465137]">
-                        {order.total}
-                      </td>
-                      <td className="py-4 px-6">
-                        <span className="bg-[#FAF7F2] border border-[#D7C5A5]/60 px-2 py-0.5 rounded text-[10px] font-semibold text-[#465137]">
-                          {order.paymentMethod}
-                        </span>
-                      </td>
-                      <td className="py-4 px-6">
-                        <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800">
-                          {order.status}
-                        </span>
-                      </td>
-                      <td className="py-4 px-6">
-                        <a
-                          href={`https://wa.me/88${order.phone.replace(/[^0-9]/g, "")}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 px-3 py-1 bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-full text-[11px] font-semibold transition-colors"
-                        >
-                          WhatsApp
-                        </a>
-                      </td>
-                    </tr>
-                  ))}
+                  {filteredOrders.map((order) => {
+                    const custName =
+                      order.customer?.full_name ||
+                      order.delivery_address?.full_name ||
+                      "Guest Customer";
+                    const custPhone =
+                      order.customer?.canonical_phone ||
+                      order.delivery_address?.phone ||
+                      "";
+                    const addressStr = order.delivery_address
+                      ? `${order.delivery_address.address || ""}, ${
+                          order.delivery_address.city_area || ""
+                        }, ${order.delivery_address.district || ""}`
+                      : "Standard Delivery";
+
+                    const cleanPhone = custPhone.replace(/[^0-9]/g, "");
+
+                    return (
+                      <tr key={order.id} className="hover:bg-[#FAF7F2]/50 transition-colors">
+                        <td className="py-4 px-6 font-mono font-bold text-[#465137]">
+                          {order.order_number}
+                        </td>
+                        <td className="py-4 px-6">
+                          <p className="font-semibold text-[#292B26]">{custName}</p>
+                          <p className="text-[11px] text-[#77786F] flex items-center gap-1 mt-0.5">
+                            <Phone className="w-3 h-3 text-[#68734B]" />
+                            <span>{custPhone}</span>
+                          </p>
+                        </td>
+                        <td className="py-4 px-6 max-w-xs text-[#77786F]">
+                          <p className="line-clamp-2 text-[11px] flex items-start gap-1">
+                            <MapPin className="w-3 h-3 text-[#68734B] shrink-0 mt-0.5" />
+                            <span>{addressStr}</span>
+                          </p>
+                          {order.delivery_address?.delivery_instructions && (
+                            <p className="text-[10px] text-amber-700 italic mt-0.5">
+                              Note: {order.delivery_address.delivery_instructions}
+                            </p>
+                          )}
+                        </td>
+                        <td className="py-4 px-6 max-w-xs">
+                          {order.items && order.items.length > 0 ? (
+                            <div className="space-y-1">
+                              {order.items.map((it: any, idx: number) => (
+                                <p key={idx} className="text-[11px] text-[#465137]">
+                                  • {it.snapshot_title}{" "}
+                                  <span className="text-[#77786F]">
+                                    ({it.snapshot_color || "Standard"}) × {it.quantity}
+                                  </span>
+                                </p>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="text-[#77786F]">Details in receipt</span>
+                          )}
+                        </td>
+                        <td className="py-4 px-6 font-bold text-[#465137]">
+                          ৳ {Number(order.total_amount).toLocaleString()}
+                        </td>
+                        <td className="py-4 px-6">
+                          <div className="space-y-0.5">
+                            <span className="bg-[#FAF7F2] border border-[#D7C5A5]/60 px-2 py-0.5 rounded text-[10px] font-semibold text-[#465137] uppercase">
+                              {order.payment_method}
+                            </span>
+                            {order.admin_notes && (
+                              <p className="text-[10px] text-emerald-700 font-mono">
+                                {order.admin_notes}
+                              </p>
+                            )}
+                          </div>
+                        </td>
+                        <td className="py-4 px-6">
+                          <select
+                            value={order.status}
+                            onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                            className="bg-white border border-[#D7C5A5]/80 text-[#292B26] text-[11px] font-semibold rounded-lg px-2 py-1 focus:outline-hidden focus:border-[#465137]"
+                          >
+                            <option value="pending">Pending</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="shipped">Shipped</option>
+                            <option value="delivered">Delivered</option>
+                            <option value="cancelled">Cancelled</option>
+                          </select>
+                        </td>
+                        <td className="py-4 px-6">
+                          {cleanPhone && (
+                            <a
+                              href={`https://wa.me/88${cleanPhone.startsWith("0") ? cleanPhone : "0" + cleanPhone}?text=${encodeURIComponent(
+                                `Hello ${custName}, regarding your EXPLODE BD Order #${order.order_number}: `
+                              )}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 px-3 py-1 bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-full text-[11px] font-semibold transition-colors"
+                              title="Message customer on WhatsApp"
+                            >
+                              <span>Chat</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
