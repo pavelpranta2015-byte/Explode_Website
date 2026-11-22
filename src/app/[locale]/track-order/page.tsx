@@ -9,6 +9,7 @@ import { orderService } from "@/services/api";
 import {
   Search,
   AlertCircle,
+  Check,
 } from "lucide-react";
 
 function TrackOrderContent() {
@@ -135,7 +136,7 @@ function TrackOrderContent() {
                 <div className="grid grid-cols-3 gap-2 pt-4 border-t border-[#D7C5A5]/30 text-center">
                   <div className="space-y-1">
                     <div className="w-8 h-8 rounded-full bg-[#68734B] text-white flex items-center justify-center mx-auto text-xs">
-                      ✓
+                      <Check className="w-4 h-4" />
                     </div>
                     <span className="text-[11px] font-semibold text-[#292B26] block">
                       {locale === "bn" ? "অর্ডার গৃহীত" : "Placed"}
@@ -143,7 +144,7 @@ function TrackOrderContent() {
                   </div>
                   <div className="space-y-1">
                     <div className="w-8 h-8 rounded-full bg-[#68734B] text-white flex items-center justify-center mx-auto text-xs">
-                      ✓
+                      <Check className="w-4 h-4" />
                     </div>
                     <span className="text-[11px] font-semibold text-[#292B26] block">
                       {locale === "bn" ? "প্যাকিং সম্পন্ন" : "Packed"}

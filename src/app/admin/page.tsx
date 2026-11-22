@@ -195,7 +195,7 @@ export default function AdminDashboardPage() {
           <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 bg-[#465137] text-white px-6 py-3 rounded-full shadow-xl flex items-center gap-2.5 animate-in slide-in-from-top-4 duration-300">
             <Check className="w-4 h-4 text-emerald-400" />
             <span className="text-xs font-semibold">
-              You have been locked out safely. Goodbye! 👋
+              You have been locked out safely. Goodbye!
             </span>
           </div>
         )}
@@ -339,7 +339,7 @@ export default function AdminDashboardPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-serif font-bold text-[#292B26]">
-              Store Overview & Management
+              Store Overview and Management
             </h1>
             <p className="text-xs sm:text-sm text-[#77786F] mt-1">
               Live database orders, customer records, and order fulfillment.
@@ -371,7 +371,7 @@ export default function AdminDashboardPage() {
               {pendingCount}
             </p>
             <span className="text-[11px] text-[#77786F]">
-              Awaiting packaging & dispatch
+              Awaiting packaging and dispatch
             </span>
           </div>
 
@@ -461,7 +461,7 @@ export default function AdminDashboardPage() {
                 <thead className="bg-[#FAF7F2] text-[#465137] font-semibold uppercase tracking-wider text-[11px]">
                   <tr>
                     <th className="py-3.5 px-6">Order ID</th>
-                    <th className="py-3.5 px-6">Customer & Phone</th>
+                    <th className="py-3.5 px-6">Customer and Phone</th>
                     <th className="py-3.5 px-6">Delivery Address</th>
                     <th className="py-3.5 px-6">Items Ordered</th>
                     <th className="py-3.5 px-6">Total (BDT)</th>
