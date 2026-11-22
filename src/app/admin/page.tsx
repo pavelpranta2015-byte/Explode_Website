@@ -80,18 +80,6 @@ export default function AdminDashboardPage() {
     setErrorMsg("");
 
     try {
-      // 1. First check if user set a private device passcode hash
-      const enteredHash = await hashString(passcode.trim());
-      const storedHash = localStorage.getItem("explode_custom_admin_hash");
-
-      if (storedHash && enteredHash === storedHash) {
-        setIsAuthenticated(true);
-        sessionStorage.setItem("explode_admin_session", "true");
-        setIsLoading(false);
-        return;
-      }
-
-      // 2. Check server-side verification (e.g. Vercel ADMIN_PASSCODE environment variable)
       const res = await fetch("/api/admin/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -102,17 +90,12 @@ export default function AdminDashboardPage() {
       if (res.ok && data.success) {
         setIsAuthenticated(true);
         sessionStorage.setItem("explode_admin_session", "true");
+        setErrorMsg("");
       } else {
-        setErrorMsg("Incorrect admin passcode. Access denied.");
+        setErrorMsg(data.message || "Incorrect admin passcode. Access denied.");
       }
     } catch {
-      // Fallback
-      if (passcode.trim() === "ExplodeBD#2026" || passcode.trim() === "explode2026@") {
-        setIsAuthenticated(true);
-        sessionStorage.setItem("explode_admin_session", "true");
-      } else {
-        setErrorMsg("Incorrect admin passcode. Access denied.");
-      }
+      setErrorMsg("Network error connecting to verification server.");
     } finally {
       setIsLoading(false);
     }
@@ -125,21 +108,6 @@ export default function AdminDashboardPage() {
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    const storedHash = localStorage.getItem("explode_custom_admin_hash");
-    const enteredCurrentHash = await hashString(currentPassInput.trim());
-
-    // Verify current password
-    if (storedHash) {
-      if (enteredCurrentHash !== storedHash) {
-        setChangePassMsg({ text: "Current password does not match.", isError: true });
-        return;
-      }
-    } else {
-      if (currentPassInput.trim() !== "ExplodeBD#2026" && currentPassInput.trim() !== "explode2026@") {
-        setChangePassMsg({ text: "Current default password does not match.", isError: true });
-        return;
-      }
-    }
 
     if (newPassInput.length < 6) {
       setChangePassMsg({ text: "New password must be at least 6 characters.", isError: true });
@@ -151,23 +119,47 @@ export default function AdminDashboardPage() {
       return;
     }
 
-    // Hash and store privately in your own browser's storage
-    const newHash = await hashString(newPassInput.trim());
-    localStorage.setItem("explode_custom_admin_hash", newHash);
+    try {
+      const res = await fetch("/api/admin/change-passcode", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          currentPasscode: currentPassInput.trim(),
+          newPasscode: newPassInput.trim(),
+        }),
+      });
 
-    setChangePassMsg({
-      text: "Passcode updated successfully! Only you know this new passcode.",
-      isError: false,
-    });
+      const data = await res.json();
 
-    setCurrentPassInput("");
-    setNewPassInput("");
-    setConfirmPassInput("");
+      if (res.ok && data.success) {
+        setChangePassMsg({
+          text: data.message || "Passcode updated successfully! Old passcode deactivated.",
+          isError: false,
+        });
 
-    setTimeout(() => {
-      setShowChangePassModal(false);
-      setChangePassMsg({ text: "", isError: false });
-    }, 2000);
+        // Clean local storage
+        localStorage.removeItem("explode_custom_admin_hash");
+
+        setCurrentPassInput("");
+        setNewPassInput("");
+        setConfirmPassInput("");
+
+        setTimeout(() => {
+          setShowChangePassModal(false);
+          setChangePassMsg({ text: "", isError: false });
+        }, 2000);
+      } else {
+        setChangePassMsg({
+          text: data.message || "Failed to update passcode.",
+          isError: true,
+        });
+      }
+    } catch {
+      setChangePassMsg({
+        text: "Server error occurred while updating passcode.",
+        isError: true,
+      });
+    }
   };
 
   const handleStatusChange = async (orderId: string, newStatus: string) => {

@@ -92,9 +92,26 @@ export async function POST(req: NextRequest) {
       throw new Error("Could not register or find customer profile");
     }
 
-    // 2. Generate unique order number (e.g. EX-829301)
-    const randomSuffix = Math.floor(100000 + Math.random() * 900000);
-    const orderNumber = `EX-${randomSuffix}`;
+    // 2. Generate sequential unique order number starting from 0 (e.g. EX-0000, EX-0001...)
+    const { count: orderCount } = await supabase
+      .from("orders")
+      .select("*", { count: "exact", head: true });
+
+    let seq = orderCount || 0;
+    let orderNumber = `EX-${String(seq).padStart(4, "0")}`;
+
+    // Guarantee uniqueness
+    while (true) {
+      const { data: existing } = await supabase
+        .from("orders")
+        .select("id")
+        .eq("order_number", orderNumber)
+        .maybeSingle();
+
+      if (!existing) break;
+      seq++;
+      orderNumber = `EX-${String(seq).padStart(4, "0")}`;
+    }
 
     // 3. Insert order
     const addressPayload = {
